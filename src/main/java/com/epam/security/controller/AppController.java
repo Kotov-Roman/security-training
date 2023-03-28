@@ -13,12 +13,12 @@ public class AppController {
     }
 
     @GetMapping("/info")
-    public String info() {
-        return "info";
+    public ResponseEntity<String>  info() {
+        return ResponseEntity.ok("some info");
     }
 
-    @GetMapping("/free")
-    public ResponseEntity<String> free() {
-        return ResponseEntity.ok("it's free");
+    @GetMapping("/about")
+    public ResponseEntity<String> about() {
+        return ResponseEntity.ok("it's non-authenticated access");
     }
 }
