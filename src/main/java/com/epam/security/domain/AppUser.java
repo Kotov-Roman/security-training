@@ -47,10 +47,10 @@ public class AppUser implements UserDetails {
     private boolean isExpired;
     private boolean isLocked;
 
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
+    @ElementCollection(targetClass = Permissions.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_permission", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    private Set<Permissions> permissions;
 
     @Override
     public boolean equals(Object o) {
@@ -67,7 +67,7 @@ public class AppUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+        return permissions;
     }
 
     @Override

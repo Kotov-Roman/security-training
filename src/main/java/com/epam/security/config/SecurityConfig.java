@@ -1,9 +1,10 @@
 package com.epam.security.config;
 
+import com.epam.security.domain.Permissions;
+import com.epam.security.handler.AuthFailureHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,14 +16,25 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthFailureHandler authFailureHandler) throws Exception {
         return http
                 .authorizeHttpRequests((requests) -> requests
-                        .antMatchers("/about").permitAll()
+                        .antMatchers("/about", "/login*", "/users/*").permitAll()
+                        .antMatchers("/info").hasAuthority(Permissions.VIEW_INFO.getAuthority())
+                        .antMatchers("/admin").hasAuthority(Permissions.VIEW_ADMIN.getAuthority())
                         .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults())
-                .logout(Customizer.withDefaults())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/", true)
+                        .failureHandler(authFailureHandler)
+                        .permitAll()
+                )
+                .logout(form -> form
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/logout-success")
+                        .permitAll()
+                )
                 .build();
     }
 
